@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rover Test Dashboard</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b1018;
+  --panel: #131c28;
+  --border: #273447;
+  --text: #e6edf6;
+  --muted: #8fa1b7;
+  --accent: #55d6be;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px system-ui, sans-serif;
+}
+header {
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 12px;
+  padding: 22px 5%; border-bottom: 1px solid var(--border);
+}
+h1 { font-size: 22px; margin: 0; }
+.subtitle, .muted { color: var(--muted); font-size: 13px; }
+.status { color: var(--accent); font-size: 13px; }
+main {
+  max-width: 1450px; margin: auto; padding: 24px 5%;
+}
+.grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.panel {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; min-width: 0;
+}
+.panel h2 { font-size: 16px; margin: 0 0 16px; }
+.camera {
+  min-height: 250px; display: grid; place-items: center;
+  background: #080c12; border: 1px dashed var(--border);
+  border-radius: 8px; text-align: center; padding: 20px;
+}
+.camera-icon { font-size: 42px; }
+.value { font-size: 18px; margin: 8px 0; }
+pre {
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  color: var(--muted); font: 13px/1.7 ui-monospace, monospace;
+  max-height: 240px; overflow: auto;
+}
+footer { padding: 22px 5%; color: var(--muted); font-size: 12px; }
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>ROVER <span style="color:#55d6be">/</span> TEST LAB</h1>
+    <div class="subtitle">ESP32-S3-CAM · AprilTag · Gemini Vision</div>
+  </div>
+  <div class="status" id="connection">● Bridge not connected</div>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="panel">
+      <h2>01 / Camera</h2>
+      <div class="camera">
+        <div>
+          <div class="camera-icon">◉</div>
+          <div>Waiting for camera bridge</div>
+          <p class="muted">Your USB camera receiver will supply the live feed.</p>
+        </div>
+      </div>
+      <p class="muted">Camera feed: awaiting connection</p>
+    </section>
+
+    <section class="panel">
+      <h2>02 / AprilTag Detection</h2>
+      <div class="muted">DETECTOR STATUS</div>
+      <div class="value" id="tagStatus">Waiting for bridge</div>
+      <div class="muted">DETECTED TAGS</div>
+      <pre id="tags">No detection data yet.</pre>
+    </section>
+
+    <section class="panel">
+      <h2>03 / Gemini Vision</h2>
+      <div class="muted">LATEST OBSERVATION</div>
+      <div class="value" id="aiStatus">Waiting for analysis</div>
+      <pre id="aiResult">AI observations will appear here.</pre>
+    </section>
+
+    <section class="panel">
+      <h2>04 / System Logs</h2>
+      <pre id="logs">[BOOT] Dashboard loaded.
+[INFO] Waiting for laptop bridge.
+[INFO] Camera and AI panels are placeholders until connected.</pre>
+    </section>
+  </div>
+</main>
+
+<footer>ROVER TEST LAB · Development dashboard · Live features require the laptop bridge.</footer>
+</body>
+</html>
