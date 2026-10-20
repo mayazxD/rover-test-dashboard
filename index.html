@@ -108,5 +108,47 @@ footer { padding: 22px 5%; color: var(--muted); font-size: 12px; }
 </main>
 
 <footer>ROVER TEST LAB · Development dashboard · Live features require the laptop bridge.</footer>
+
+<script>
+const BRIDGE = "http://127.0.0.1:5000/api/status";
+
+async function updateBridge() {
+  const status = document.getElementById("connection");
+
+  try {
+    const response = await fetch(BRIDGE, {
+      signal: AbortSignal.timeout(3000)
+    });
+
+    if (!response.ok) throw new Error("Bridge unavailable");
+
+    const data = await response.json();
+
+    status.textContent = "● Bridge online";
+    status.style.color = "#55d6be";
+
+    document.getElementById("tagStatus").textContent =
+      data.apriltag;
+
+    document.getElementById("aiStatus").textContent =
+      data.gemini;
+
+    document.getElementById("logs").textContent =
+      "[CONNECTED] Python bridge online.\n" +
+      "[CAMERA] " + data.camera + "\n" +
+      "[APRILTAG] " + data.apriltag + "\n" +
+      "[GEMINI] " + data.gemini;
+  } catch (error) {
+    status.textContent = "● Bridge disconnected";
+    status.style.color = "#ff7979";
+  }
+}
+
+updateBridge();
+setInterval(updateBridge, 2000);
+</script>
+</body>
+</html>
+
 </body>
 </html>
