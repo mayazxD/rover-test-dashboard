@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rover Test Dashboard</title>
+<title>Rover Test Lab</title>
 <style>
 :root {
   color-scheme: dark;
@@ -14,6 +14,7 @@
   --text: #e6edf6;
   --muted: #8fa1b7;
   --accent: #55d6be;
+  --danger: #ff7979;
 }
 * { box-sizing: border-box; }
 body {
@@ -23,36 +24,55 @@ body {
   font: 15px system-ui, sans-serif;
 }
 header {
-  display: flex; justify-content: space-between;
-  align-items: center; flex-wrap: wrap; gap: 12px;
-  padding: 22px 5%; border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 5%;
+  border-bottom: 1px solid var(--border);
 }
 h1 { font-size: 22px; margin: 0; }
 .subtitle, .muted { color: var(--muted); font-size: 13px; }
-.status { color: var(--accent); font-size: 13px; }
-main {
-  max-width: 1450px; margin: auto; padding: 24px 5%;
-}
+.status { color: var(--danger); font-size: 13px; }
+main { max-width: 1450px; margin: auto; padding: 24px 5%; }
 .grid {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 .panel {
-  background: var(--panel); border: 1px solid var(--border);
-  border-radius: 12px; padding: 18px; min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  min-width: 0;
 }
 .panel h2 { font-size: 16px; margin: 0 0 16px; }
 .camera {
-  min-height: 250px; display: grid; place-items: center;
-  background: #080c12; border: 1px dashed var(--border);
-  border-radius: 8px; text-align: center; padding: 20px;
+  min-height: 250px;
+  display: grid;
+  place-items: center;
+  background: #080c12;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
-.camera-icon { font-size: 42px; }
+#cameraFeed {
+  display: block;
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+}
+.placeholder { text-align: center; padding: 20px; }
 .value { font-size: 18px; margin: 8px 0; }
 pre {
-  white-space: pre-wrap; overflow-wrap: anywhere;
-  color: var(--muted); font: 13px/1.7 ui-monospace, monospace;
-  max-height: 240px; overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font: 13px/1.7 ui-monospace, monospace;
+  max-height: 260px;
+  overflow: auto;
 }
 footer { padding: 22px 5%; color: var(--muted); font-size: 12px; }
 @media (max-width: 720px) {
@@ -61,94 +81,134 @@ footer { padding: 22px 5%; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
+
 <header>
   <div>
-    <h1>ROVER <span style="color:#55d6be">/</span> TEST LAB</h1>
+    <h1>ROVER <span style="color:var(--accent)">/</span> TEST LAB</h1>
     <div class="subtitle">ESP32-S3-CAM · AprilTag · Gemini Vision</div>
   </div>
-  <div class="status" id="connection">● Bridge not connected</div>
+  <div class="status" id="connection">● Checking bridge...</div>
 </header>
 
 <main>
   <div class="grid">
+
     <section class="panel">
       <h2>01 / Camera</h2>
       <div class="camera">
-        <div>
-          <div class="camera-icon">◉</div>
-          <div>Waiting for camera bridge</div>
-          <p class="muted">Your USB camera receiver will supply the live feed.</p>
+        <div class="placeholder" id="cameraPlaceholder">
+          <div style="font-size:42px">◉</div>
+          <div>Waiting for camera...</div>
+          <p class="muted">Start the Python bridge on your laptop.</p>
         </div>
+        <img id="cameraFeed" alt="Live ESP32 camera feed" hidden>
       </div>
-      <p class="muted">Camera feed: awaiting connection</p>
+      <p class="muted" id="cameraStatus">Camera not connected</p>
     </section>
 
     <section class="panel">
       <h2>02 / AprilTag Detection</h2>
       <div class="muted">DETECTOR STATUS</div>
-      <div class="value" id="tagStatus">Waiting for bridge</div>
-      <div class="muted">DETECTED TAGS</div>
-      <pre id="tags">No detection data yet.</pre>
+      <div class="value" id="tagStatus">Not started</div>
+      <div class="muted">DETECTIONS</div>
+      <pre id="tags">Waiting for AprilTag integration.</pre>
     </section>
 
     <section class="panel">
       <h2>03 / Gemini Vision</h2>
       <div class="muted">LATEST OBSERVATION</div>
-      <div class="value" id="aiStatus">Waiting for analysis</div>
-      <pre id="aiResult">AI observations will appear here.</pre>
+      <div class="value" id="aiStatus">Not started</div>
+      <pre id="aiResult">Waiting for Gemini integration.</pre>
     </section>
 
     <section class="panel">
       <h2>04 / System Logs</h2>
       <pre id="logs">[BOOT] Dashboard loaded.
-[INFO] Waiting for laptop bridge.
-[INFO] Camera and AI panels are placeholders until connected.</pre>
+[INFO] Connecting to laptop bridge...</pre>
     </section>
+
   </div>
 </main>
 
-<footer>ROVER TEST LAB · Development dashboard · Live features require the laptop bridge.</footer>
+<footer>ROVER TEST LAB · GitHub Pages frontend · Laptop bridge required for live testing.</footer>
 
 <script>
-const BRIDGE = "http://127.0.0.1:5000/api/status";
+const BRIDGE = "http://127.0.0.1:5000";
+const connection = document.getElementById("connection");
+const cameraFeed = document.getElementById("cameraFeed");
+const cameraPlaceholder = document.getElementById("cameraPlaceholder");
 
-async function updateBridge() {
-  const status = document.getElementById("connection");
-
+async function updateStatus() {
   try {
-    const response = await fetch(BRIDGE, {
-      signal: AbortSignal.timeout(3000)
+    const response = await fetch(BRIDGE + "/api/status", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(2500)
     });
 
     if (!response.ok) throw new Error("Bridge unavailable");
 
     const data = await response.json();
 
-    status.textContent = "● Bridge online";
-    status.style.color = "#55d6be";
+    connection.textContent = "● Bridge online";
+    connection.style.color = "var(--accent)";
+    document.getElementById("cameraStatus").textContent = data.camera;
+    document.getElementById("tagStatus").textContent = data.apriltag;
+    document.getElementById("aiStatus").textContent = data.gemini;
 
-    document.getElementById("tagStatus").textContent =
-      data.apriltag;
+    try {
+      const logResponse = await fetch(BRIDGE + "/api/logs", {
+        cache: "no-store",
+        signal: AbortSignal.timeout(2000)
+      });
+      if (logResponse.ok) {
+        const logData = await logResponse.json();
+        document.getElementById("logs").textContent =
+          (logData.logs || []).join("\n");
+      }
+    } catch (_) {}
 
-    document.getElementById("aiStatus").textContent =
-      data.gemini;
+    if (data.camera === "streaming") {
+      cameraPlaceholder.hidden = true;
+      cameraFeed.hidden = false;
+    } else {
+      cameraFeed.hidden = true;
+      cameraPlaceholder.hidden = false;
+    }
 
-    document.getElementById("logs").textContent =
-      "[CONNECTED] Python bridge online.\n" +
-      "[CAMERA] " + data.camera + "\n" +
-      "[APRILTAG] " + data.apriltag + "\n" +
-      "[GEMINI] " + data.gemini;
+    if (data.last_frame_seconds_ago != null) {
+      document.getElementById("cameraStatus").textContent =
+        "Last frame: " + data.last_frame_seconds_ago + "s ago";
+    }
+
   } catch (error) {
-    status.textContent = "● Bridge disconnected";
-    status.style.color = "#ff7979";
+    connection.textContent = "● Bridge disconnected";
+    connection.style.color = "var(--danger)";
+    document.getElementById("cameraStatus").textContent =
+      "Cannot reach laptop bridge";
+    cameraFeed.hidden = true;
+    cameraPlaceholder.hidden = false;
   }
 }
 
-updateBridge();
-setInterval(updateBridge, 2000);
+function refreshFrame() {
+  cameraFeed.src = BRIDGE + "/api/frame.jpg?t=" + Date.now();
+}
+
+cameraFeed.addEventListener("error", () => {
+  cameraFeed.hidden = true;
+  cameraPlaceholder.hidden = false;
+});
+
+cameraFeed.addEventListener("load", () => {
+  cameraFeed.hidden = false;
+  cameraPlaceholder.hidden = true;
+});
+
+updateStatus();
+refreshFrame();
+setInterval(updateStatus, 2000);
+setInterval(refreshFrame, 500);
 </script>
-</body>
-</html>
 
 </body>
 </html>
